@@ -3,7 +3,9 @@ import { FiPieChart, FiSettings } from "react-icons/fi";
 import { IoPricetagsOutline } from "react-icons/io5";
 import { MdEditCalendar } from "react-icons/md";
 import { BiUserCircle } from "react-icons/bi";
-
+import AOS from "aos";
+import { useEffect } from "react";
+import "aos/dist/aos.css";
 const Sidebar = ({ children }) => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isActive, setActive] = useState("Dashboard");
@@ -23,9 +25,16 @@ const Sidebar = ({ children }) => {
         setActive((prev) => name);
     };
 
+    useEffect(() => {
+        AOS.init({
+            duration: 1200,
+            mirror: false,
+            easing: "ease-out",
+        });
+    }, []);
     return (
-        <div className='flex h-full relative '>
-            <div className='flex-none sm:hidden max-sm:absolute max-sm:top-[62px] max-sm:left-3'>
+        <div  className='flex h-full relative '>
+            <div  className='flex-none sm:hidden max-sm:absolute max-sm:top-[62px] max-sm:left-3'>
                 <button
                     className='flex items-center justify-center w-10 text-black p-0'
                     onClick={toggleSidebar}>
@@ -52,17 +61,18 @@ const Sidebar = ({ children }) => {
                     </svg>
                 </button>
             </div>
-            <div
+            <div data-aos="fade-right"
                 className={`flex-none sm:flex ${isSidebarOpen ? "flex" : "hidden"
                     } bg-black w-64 p-4 transition-all duration-300 ease-in-out
           text-[#fff] my-auto rounded-[1.8rem] mx-20 max-sm:mx-0
            flex-col relative font-[300] pl-10 max-sm:absolute max-sm:top-14 max-sm:left-14 z-10 h-[1100px]
         `}>
-                <h1 className='text-3xl font-extrabold py-10'>Switchy</h1>
+                <h1  data-aos="fade-right"
+      className='text-3xl font-bold py-10'>Switchy</h1>
 
                 <ul className='flex flex-col gap-10'>
                     {navItems.map((item, index) => (
-                        <li
+                        <li data-aos="fade-right"
                             key={index}
                             className='flex items-center gap-4 hover:cursor-pointer'
                             onClick={() => handleSetActive(item.name)}>
@@ -71,11 +81,11 @@ const Sidebar = ({ children }) => {
                                     "transform scale-x-[-1]"
                                     }`}
                             />
-                            <a
+                            <a 
                                 onClick={() => handleSetActive(item.name)}
-                                className={`text-lg   font-${isActive === item.name
+                                className={`text-l   font-${isActive === item.name
                                     ? "bold"
-                                    : "[300]"
+                                    : "normal"
                                     }`}>
                                 {item.name}
                             </a>
@@ -87,7 +97,7 @@ const Sidebar = ({ children }) => {
                     <a href={"/dashboard"}>Contact us</a>
                 </div>
             </div>
-            <div className=' w-[100%] p-10'>{children}</div>
+            <div className='w-[100%] p-10'>{children}</div>
         </div>
     );
 };

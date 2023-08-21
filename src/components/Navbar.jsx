@@ -2,6 +2,9 @@ import { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { HiUserCircle } from "react-icons/hi";
+import AOS from "aos";
+import { useEffect } from "react";
+import "aos/dist/aos.css";
 const Navbar = () => {
     const [isProfileOpen, setProfileOpen] = useState(false);
     const [search, setSearch] = useState('');
@@ -14,8 +17,16 @@ const Navbar = () => {
     const handleSearch = (e) => {
         setSearch(e.target.value)
     }
+
+    useEffect(() => {
+        AOS.init({
+            duration: 1200,
+            mirror: false,
+            easing: "ease-out",
+        });
+    }, []);
     return (
-        <nav className='px-4 py-3'>
+        <nav className='px-4 py-3' data-aos="fade-down">
             <div className='flex items-center justify-between'>
                 <div className='text-black font-bold text-2xl max-lg:hidden'>
                     Dashboard
