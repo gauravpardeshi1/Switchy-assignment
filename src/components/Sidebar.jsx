@@ -33,7 +33,7 @@ const Sidebar = ({ children }) => {
         });
     }, []);
     return (
-        <div  className='flex h-full relative '>
+        <div  className='flex h-full relative w-full '>
             <div  className='flex-none sm:hidden max-sm:absolute max-sm:top-[62px] max-sm:left-3'>
                 <button
                     className='flex items-center justify-center w-10 text-black p-0'
@@ -97,7 +97,7 @@ const Sidebar = ({ children }) => {
                     <a href={"/dashboard"}>Contact us</a>
                 </div>
             </div>
-            <div className='w-[70%]  p-10'>{children}</div>
+            <div className='w-[100%]  p-10'>{children}</div>
         </div>
     );
 };

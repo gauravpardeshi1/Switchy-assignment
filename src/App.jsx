@@ -6,7 +6,6 @@ import Barcharts from "./utils/Barcharts";
 import LineChart from "./utils/Barcharts2";
 import { useEffect, useState } from "react";
 import { getGraphData1, getGraphData2 } from "./api";
-import EnergyUsesGraph from "./utils/Bar";
 
 export default function App() {
   const [state, setState] = useState({ graph1: [], graph2: [] })
@@ -25,18 +24,16 @@ export default function App() {
     getGraphDatas()
   }, [])
 
-  
 
-  console.log(state)
+
+ 
   return (
     <div className='h-full'>
       <Sidebar>
         <Navbar />
         <Testimonials />
-        <Barcharts />
-       {/* { state.graph1.length>0 && <Barcharts energyData={state.graph1}/>} */}
-       {/* <EnergyUsesGraph/> */}
-       <LineChart /> 
+        <Barcharts  />
+        <LineChart />
       </Sidebar>
       <Footer />
     </div>
