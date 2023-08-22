@@ -10,10 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@coreui/react": "^5.0.0-alpha.0",
     "aos": "^2.3.4",
     "apexcharts": "^3.41.1",
+    "axios": "^1.4.0",
+    "chart.js": "^4.3.3",
+    "faker": "^6.6.6",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1"
   },

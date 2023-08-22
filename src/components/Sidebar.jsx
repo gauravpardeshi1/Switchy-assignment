@@ -97,7 +97,7 @@ const Sidebar = ({ children }) => {
                     <a href={"/dashboard"}>Contact us</a>
                 </div>
             </div>
-            <div className='w-[100%] p-10'>{children}</div>
+            <div className='w-[70%]  p-10'>{children}</div>
         </div>
     );
 };

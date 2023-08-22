@@ -4,7 +4,20 @@ import ReactApexChart from "react-apexcharts";
 import AOS from "aos";
 import { useEffect } from "react";
 import "aos/dist/aos.css";
+import axios from "axios";
 const LineChart = () => {
+	const [data, setdata] = useState({solar:[],grid:[],load:[]});
+	
+	useEffect(() => {
+		axios.get('https://lumpy-husky-address.glitch.me/graph2')
+		  .then(response => {
+			setdata(response.data);
+	
+		  })
+	
+	  }, [])
+	
+	console.log('kk',data);
 	const [chartOptions, setChartOptions] = useState({
 		chart: {
 			type: "line",
@@ -20,7 +33,7 @@ const LineChart = () => {
 				show: false,
 			},
 		},
-		colors: ["#e9a0a0", "#a1df84"],
+		colors: ["#e9a0a0", "#a1df84","#c83d12"],
 		dataLabels: {
 			enabled: true,
 		},
@@ -46,7 +59,7 @@ const LineChart = () => {
 		},
 		yaxis: {
 			min: 100,
-			max: 500,
+			max: 800,
 		},
 		legend: {
 			position: "top",
@@ -59,12 +72,16 @@ const LineChart = () => {
 
 	const chartSeries = [
 		{
-			name: "Guest",
+			name: "Solar",
 			data: [340, 430, 448, 470, 440, 420, 340],
 		},
 		{
-			name: "User",
+			name: "Grid",
 			data: [220, 370, 389, 400, 450, 480, 260],
+		},
+		{
+			name: "Load",
+			data: [420, 370, 349, 410, 570, 480, 260],
 		},
 	];
     useEffect(() => {
