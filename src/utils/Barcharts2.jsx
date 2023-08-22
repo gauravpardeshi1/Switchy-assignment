@@ -4,29 +4,24 @@ import ReactApexChart from "react-apexcharts";
 import AOS from "aos";
 import { useEffect } from "react";
 import "aos/dist/aos.css";
+
 import axios from "axios";
 const LineChart = () => {
 	const [data, setdata] = useState({ solar: [], grid: [], load: [] });
-
 	const getdata = () => {
-		axios.get('https://lumpy-husky-address.glitch.me/graph2')
+		axios.get(import.meta.env.VITE_APP_GRAPH_2_API)
 			.then(response => {
 				const solarData = response.data.map(item => item.solar);
 				const gridData = response.data.map(item => item.grid);
 				const loadData = response.data.map(item => item.load);
-				setdata({ solar: solarData.slice(0, 100), grid: gridData.slice(50, 150), load: loadData.slice(0, 100) });
+
+				setdata({ solar: solarData.slice(0, 100),grid: gridData.slice(50, 150), load: loadData.slice(0, 100) });
 
 			})
 	}
+
 	useEffect(() => {
 		getdata()
-
-	}, [])
-
-
-
-
-	useEffect(() => {
 		AOS.init({
 			duration: 1200,
 			mirror: false,

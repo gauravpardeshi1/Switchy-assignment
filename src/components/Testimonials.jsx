@@ -1,41 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoPricetagsOutline } from "react-icons/io5";
 import { AiOutlineLike, AiOutlineMoneyCollect } from "react-icons/ai";
 import { FiUsers } from "react-icons/fi";
 import AOS from "aos";
 import { useEffect } from "react";
 import "aos/dist/aos.css";
+import axios from "axios";
 const Testimonials = () => {
+	const [data, setdata] = useState({ solarTotal:0,loadTotal:0,gridTotal:0 });
+	const [total, settotal] = useState([])
+	const getdata = () => {
+		axios.get(import.meta.env.VITE_APP_GRAPH_2_API)
+			.then(response => {
+				settotal(response.data)
+				const solarData = response.data.map(item => item.solar);
+				const gridData = response.data.map(item => item.grid);
+				const loadData = response.data.map(item => item.load);
+
+				setdata({ solarTotal:solarData.reduce((a,b)=>a+b,0),loadTotal:loadData.reduce((a,b)=>a+b,0),gridTotal:gridData.reduce((a,b)=>a+b,0) });
+
+			})
+	}
+
+	const TotalEnergy=data.solarTotal+data.loadTotal+data.gridTotal
+	
 	const testimonials = [
 		{
-			title: "Total Revenue",
+			title: "Total Energy",
 			icon: AiOutlineMoneyCollect,
 			amount:
 				
-				"$" + 54000,
+				 TotalEnergy.toFixed(2),
 			bg: "bg-[#ddefe0]",
 		},
 		{
-			title: "Total Transaction",
+			title: "Solar Energy used",
 			icon: IoPricetagsOutline,
-			amount: 10000,
+			amount: data.solarTotal.toFixed(2),
 			bg: "bg-[#f4ecdd]",
 		},
 		{
-			title: "Total Likes",
+			title: "Load Energy used",
 			icon: AiOutlineLike,
-			amount: 7000,
+			amount: data.loadTotal.toFixed(2),
 			bg: "bg-[#efdada]",
 		},
 		{
-			title: "Total Users",
+			title: "Grid Energy used",
 			icon: FiUsers,
-			amount: 4500,
+			amount: data.gridTotal.toFixed(2),
 			bg: "bg-[#dee0ef]",
 		},
 	];
 
 	useEffect(() => {
+		getdata()
+
         AOS.init({
             duration: 1200,
             mirror: false,
