@@ -69,7 +69,7 @@ const LineChart = () => {
 						size: 1,
 					},
 					xaxis: {
-						categories: ['Data'],
+						categories: ['Energy Usage'],
 					},
 					yaxis: {
 						min: 0,

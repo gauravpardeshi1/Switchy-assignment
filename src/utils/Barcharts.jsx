@@ -23,8 +23,8 @@ const Barcharts = () => {
       axios.get(import.meta.env.VITE_APP_GRAPH_1_API)
         .then(response => {
           const energyData = response.data.map(item => item.energy);
-          setData(energyData.slice(0, 100));
-          setToggleData(energyData.slice(0, 100))
+          setData(energyData.slice(0, 200));
+          setToggleData(energyData.slice(0, 200))
         })
       setloadaing(false)
     } catch (error) {
@@ -46,12 +46,12 @@ const Barcharts = () => {
     const arr = [...data];
     let newData;
     if (el == 'daily') {
-      newData = arr.slice(0, 100);
+      newData = arr.slice(0, 200);
     }
     else if (el == 'weekly') {
-      newData = arr.slice(0, 20);
+      newData = arr.slice(0, 50);
     } else if (el == 'monthly') {
-      newData = arr.slice(0, 10);
+      newData = arr.slice(0, 20);
     } else {
       newData = arr;
 
@@ -112,7 +112,7 @@ const Barcharts = () => {
               }
             },
             xaxis: {
-              categories: [],
+              // categories: [1,2,2,2,3,4],
               position: "bottom",
               labels: {
                 offsetY: 0
