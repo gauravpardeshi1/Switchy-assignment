@@ -15,7 +15,7 @@ const Sidebar = ({ children }) => {
 
     const navItems = [
         { name: "Dashboard", path: "/dashboard", icon: FiPieChart },
-        { name: "Transaction", path: "/dashboard", icon: IoPricetagsOutline },
+        { name: "Graphs", path: "/dashboard", icon: IoPricetagsOutline },
         { name: "Schedules", path: "/dashboard", icon: MdEditCalendar },
         { name: "Users", path: "/dashboard", icon: BiUserCircle },
         { name: "Settings", path: "/dashboard", icon: FiSettings },
@@ -77,7 +77,7 @@ const Sidebar = ({ children }) => {
                             className='flex items-center gap-4 hover:cursor-pointer'
                             onClick={() => handleSetActive(item.name)}>
                             <item.icon
-                                className={`text-xl ${item.name === "Transaction" &&
+                                className={`text-xl ${item.name === "Graphs" &&
                                     "transform scale-x-[-1]"
                                     }`}
                             />

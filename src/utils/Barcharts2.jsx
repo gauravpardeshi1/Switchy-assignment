@@ -8,29 +8,57 @@ import "aos/dist/aos.css";
 import axios from "axios";
 const LineChart = () => {
 	const [data, setdata] = useState({ solar: [], grid: [], load: [] });
-	const getdata = () => {
-		axios.get(import.meta.env.VITE_APP_GRAPH_2_API)
+	const [select,setselect]=useState('')
+	const getdata = (epochTime) => {
+		let API;
+		if(epochTime){
+			API=`https://7yakqpu4vl.execute-api.ap-south-1.amazonaws.com/alpha/getconsumptiondata?start=${epochTime}&end=${epochTime}`
+		}else{
+			API=`https://7yakqpu4vl.execute-api.ap-south-1.amazonaws.com/alpha/getconsumptiondata?start=1692316800&end=1692316800`
+		}
+		console.log('A',API)
+		axios.get(API)
 			.then(response => {
 				const solarData = response.data.map(item => item.solar);
 				const gridData = response.data.map(item => item.grid);
 				const loadData = response.data.map(item => item.load);
 
-				setdata({ solar: solarData.slice(0, 100),grid: gridData.slice(50, 150), load: loadData.slice(0, 100) });
+				setdata({ solar: solarData,grid: gridData, load: loadData});
 
 			})
 	}
 
 	useEffect(() => {
-		getdata()
+		if(select){
+			const dateObject = new Date(select);
+           const epochTime = Math.floor(dateObject.getTime() / 1000);
+             getdata(epochTime)
+		}else{
+			getdata()
+		}
+		
 		AOS.init({
 			duration: 1200,
 			mirror: false,
 			easing: "ease-out",
 		});
-	}, []);
+	}, [select]);
+
+	//console.log('s',select.type)
+
 	return (
+		<> 
+		
+
+		
+
+
 		<div data-aos="fade-up"
-			data-aos-duration="3000" id='chart' className='bg-white rounded-3xl p-6 mt-10 text-3xl'>
+			data-aos-duration="3000" id='chart' className='bg-white w-full rounded-3xl p-6 mt-10 text-3xl'>
+				<div class=" flex justify-end  w-full  relative ">
+  
+  <input value={select} onChange={(e)=>setselect(e.target.value)}  type="date"  class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date"/>
+</div>
 			<ReactApexChart
 				options={{
 					chart: {
@@ -68,13 +96,13 @@ const LineChart = () => {
 					markers: {
 						size: 1,
 					},
-					xaxis: {
-						categories: ['Energy Usage'],
-					},
-					yaxis: {
-						min: 0,
-						max: 5,
-					},
+					// xaxis: {
+					// 	categories: ['Energy Usage'],
+					// },
+					// yaxis: {
+					// 	min: 0,
+					// 	max: 5,
+					// },
 					legend: {
 						position: "top",
 						horizontalAlign: "right",
@@ -102,6 +130,7 @@ const LineChart = () => {
 				width={"100%"}
 			/>
 		</div>
+		</>
 	);
 };
 

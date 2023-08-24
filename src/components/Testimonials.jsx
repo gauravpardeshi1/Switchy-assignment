@@ -16,7 +16,7 @@ const Testimonials = () => {
 				const solarData = response.data.map(item => item.solar);
 				const gridData = response.data.map(item => item.grid);
 				const loadData = response.data.map(item => item.load);
-
+			
 				setdata({ solarTotal:solarData.reduce((a,b)=>a+b,0),loadTotal:loadData.reduce((a,b)=>a+b,0),gridTotal:gridData.reduce((a,b)=>a+b,0) });
 
 			})

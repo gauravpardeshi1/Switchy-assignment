@@ -9,12 +9,12 @@ import { ThreeDots } from 'react-loader-spinner'
 const Barcharts = () => {
   const [data, setData] = useState([]);
   const [toggleData, setToggleData] = useState([]);
-  const [toggle, settoggle] = useState('')
-  const [Energy, setEnergy] = useState([])
+  const [toggle, settoggle] = useState('daily')
+  const [TimeData, setTimeData] = useState([])
   const [loading, setloadaing] = useState(false)
+  const [xaxis, setxaxis] = useState([])
 
 
-  
 
 
   const getdata = () => {
@@ -23,8 +23,10 @@ const Barcharts = () => {
       axios.get(import.meta.env.VITE_APP_GRAPH_1_API)
         .then(response => {
           const energyData = response.data.map(item => item.energy);
-          setData(energyData.slice(0, 200));
-          setToggleData(energyData.slice(0, 200))
+          const Tdata = response.data
+          setTimeData(Tdata.slice(0, 100))
+          setData(energyData.slice(0, 100));
+          setToggleData(energyData.slice(0, 100))
         })
       setloadaing(false)
     } catch (error) {
@@ -34,36 +36,118 @@ const Barcharts = () => {
 
   }
 
-  
-  useEffect(() => {
-    getdata()
-    
-  }, [loading])
 
+
+
+  const convertedData = TimeData.map(item => {
+    const date = new Date(item.time * 1000); 
+    const formattedDate = date.toISOString().split('T')[0]; 
+    return formattedDate; 
+  });
+
+
+  function getWeekAndMonthNames(date) {
+    const weekNumber = getWeekNumber(date);
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const monthName = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    return { weekName: `Week ${weekNumber}`, monthName: `${monthName} ${year}` };
+  }
+
+  function groupByWeekAndMonth(data) {
+    const weekGroups = {};
+    const monthGroups = {};
+
+    data.forEach(item => {
+      const date = new Date(item.time * 1000);
+      const weekNumber = getWeekNumber(date);
+      const month = date.getMonth() + 1;
+      if (!weekGroups[weekNumber]) {
+        weekGroups[weekNumber] = [];
+      }
+      weekGroups[weekNumber].push(item);
+
+      if (!monthGroups[month]) {
+        monthGroups[month] = [];
+      }
+      monthGroups[month].push(item);
+    });
+
+    return { weekGroups, monthGroups };
+  }
+
+  function getWeekNumber(date) {
+    const oneJan = new Date(date.getFullYear(), 0, 1);
+    const days = Math.floor((date - oneJan) / (24 * 60 * 60 * 1000));
+    const weekNumber = Math.ceil((days + oneJan.getDay() + 1) / 7);
+    return weekNumber;
+  }
+
+  const { weekGroups, monthGroups } = groupByWeekAndMonth(TimeData);
+
+  const maxEnergyWeekWise = Object.values(weekGroups).map(week => {
+    const maxEnergy = week.reduce((max, item) => Math.max(max, item.energy), 0);
+    return maxEnergy;
+  });
+
+  const maxEnergyMonthWise = Object.values(monthGroups).map(month => {
+    const maxEnergy = month.reduce((max, item) => Math.max(max, item.energy), 0);
+    return maxEnergy;
+  });
+
+  const weekNames = Object.keys(weekGroups).map(week => getWeekAndMonthNames(new Date(weekGroups[week][0].time * 1000)).weekName);
+  const monthNames = Object.keys(monthGroups).map(month => getWeekAndMonthNames(new Date(monthGroups[month][0].time * 1000)).monthName);
+
+  // console.log("Week Names:", weekNames);
+  // console.log("Month Names:", monthNames);
+  // console.log("Maximum energy week-wise:", maxEnergyWeekWise);
+  // console.log("Maximum energy month-wise:", maxEnergyMonthWise);
+
+  // console.log('t', TimeData)
 
   const handletoggle = (el) => {
     settoggle(el)
     const arr = [...data];
     let newData;
+    let newData2;
     if (el == 'daily') {
       newData = arr.slice(0, 200);
+      newData2=convertedData
+
     }
     else if (el == 'weekly') {
-      newData = arr.slice(0, 50);
+      newData = maxEnergyWeekWise
+      newData2=weekNames
+
     } else if (el == 'monthly') {
-      newData = arr.slice(0, 20);
+      newData = maxEnergyMonthWise
+      newData2=monthNames
+
     } else {
       newData = arr;
+      newData2=convertedData
 
     }
-    
+
+    setxaxis(newData2)
     setToggleData(newData);
   }
+  
 
- 
+  useEffect(() => {
+    getdata()
+
+
+  }, [loading])
+
+  //console.log('t',toggle)
+
   return (
 
-    <div  id="chart" className='mt-[100px]'>
+    <div id="chart" className='mt-[100px]'>
       <div class='w-[100%]  flex justify-end mb-10 '>
 
         <div class="flex items-center mr-4 ">
@@ -112,7 +196,7 @@ const Barcharts = () => {
               }
             },
             xaxis: {
-              // categories: [1,2,2,2,3,4],
+              categories: xaxis,
               position: "bottom",
               labels: {
                 offsetY: 0
