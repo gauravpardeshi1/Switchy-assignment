@@ -13,6 +13,8 @@ const Barcharts = () => {
   const [TimeData, setTimeData] = useState([])
   const [loading, setloadaing] = useState(false)
   const [xaxis, setxaxis] = useState([])
+  const [converteState, setConverteState] = useState([])
+
 
 
 
@@ -27,6 +29,16 @@ const Barcharts = () => {
           setTimeData(Tdata.slice(0, 100))
           setData(energyData.slice(0, 100));
           setToggleData(energyData.slice(0, 100))
+          const convertedData = Tdata.map(item => {
+            const date = new Date(item.time * 1000);
+            const formattedDate = date.toISOString().split('T')[0];
+            return formattedDate;
+          });
+          if (convertedData) {
+            setConverteState(convertedData.slice(0, 100))
+            //  console.log("converted data is available", convertedData.slice(0, 100))
+            handletoggle('daily', convertedData.slice(0, 100), energyData.slice(0, 100))
+          }
         })
       setloadaing(false)
     } catch (error) {
@@ -39,11 +51,11 @@ const Barcharts = () => {
 
 
 
-  const convertedData = TimeData.map(item => {
-    const date = new Date(item.time * 1000); 
-    const formattedDate = date.toISOString().split('T')[0]; 
-    return formattedDate; 
-  });
+  // const convertedData = TimeData.map(item => {
+  //   const date = new Date(item.time * 1000);
+  //   const formattedDate = date.toISOString().split('T')[0];
+  //   return formattedDate;
+  // });
 
 
   function getWeekAndMonthNames(date) {
@@ -108,177 +120,178 @@ const Barcharts = () => {
 
   // console.log('t', TimeData)
 
-  const handletoggle = (el) => {
+  function handletoggle(el, mainData, energyDD) {
     settoggle(el)
     const arr = [...data];
     let newData;
     let newData2;
+    //console.log(el, energyDD)
+
     if (el == 'daily') {
-      newData = arr.slice(0, 200);
-      newData2=convertedData
+      newData = energyDD ? energyDD : arr.slice(0, 100)
+      newData2 = mainData ? mainData : converteState
 
     }
     else if (el == 'weekly') {
       newData = maxEnergyWeekWise
-      newData2=weekNames
+      newData2 = weekNames
 
     } else if (el == 'monthly') {
       newData = maxEnergyMonthWise
-      newData2=monthNames
+      newData2 = monthNames
 
     } else {
       newData = arr;
-      newData2=convertedData
+      newData2 = converteState
 
     }
 
     setxaxis(newData2)
     setToggleData(newData);
   }
-  
+
 
   useEffect(() => {
     getdata()
-
+    AOS.init({
+      duration: 1200,
+      mirror: false,
+      easing: "ease-out",
+    });
 
   }, [loading])
 
-  //console.log('t',toggle)
+
 
   return (
+    <>
+      {!toggleData.length > 0 ? <h1 className=' mt-[200px] text-gray-800 font-bold text-lg text-center animate-pulse '>Loading...</h1> :
+        <div data-aos="fade-up"
+        data-aos-duration="700" 
+           id="chart" className='mt-[100px]'>
+          <div class='w-[100%]  flex justify-end mb-10 '>
 
-    <div id="chart" className='mt-[100px]'>
-      <div class='w-[100%]  flex justify-end mb-10 '>
-
-        <div class="flex items-center mr-4 ">
-          <input checked={toggle == 'daily'} onChange={() => handletoggle('daily')} id="red-checkbox" type="checkbox" value="" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 " />
-          <label for="red-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">DAYS</label>
-        </div>
-        <div class="flex items-center mr-4">
-          <input checked={toggle == 'weekly'} onChange={() => handletoggle('weekly')} id="green-checkbox" type="checkbox" value="" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 " />
-          <label for="green-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">WEEK</label>
-        </div>
-        <div class="flex items-center mr-4">
-          <input checked={toggle == 'monthly'} onChange={() => handletoggle('monthly')} id="purple-checkbox" type="checkbox" value="" class="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 " />
-          <label for="purple-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">MONTH</label>
-        </div>
+            <div class="flex items-center mr-4 ">
+              <input checked={toggle == 'daily'} onChange={() => handletoggle('daily')} id="red-checkbox" type="checkbox" value="" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 " />
+              <label for="red-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">DAYS</label>
+            </div>
+            <div class="flex items-center mr-4">
+              <input checked={toggle == 'weekly'} onChange={() => handletoggle('weekly')} id="green-checkbox" type="checkbox" value="" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 " />
+              <label for="green-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">WEEK</label>
+            </div>
+            <div class="flex items-center mr-4">
+              <input checked={toggle == 'monthly'} onChange={() => handletoggle('monthly')} id="purple-checkbox" type="checkbox" value="" class="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 " />
+              <label for="purple-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">MONTH</label>
+            </div>
 
 
-      </div>
-      {loading ? <ThreeDots
-        height="80"
-        width="100"
-        radius="9"
-        color="#4fa94d"
-        ariaLabel="three-dots-loading"
-        wrapperStyle={{}}
-        wrapperClassName=""
-        visible={true}
-      /> :
-        <ReactApexChart
-          options={{
-            plotOptions: {
-              bar: {
-                dataLabels: {
-                  position: "top" // top, center, bottom
-                }
-              }
-            },
-            dataLabels: {
-              enabled: true,
-              formatter: function (val) {
+          </div>
 
-              },
-              offsetY: -20,
-              style: {
-                fontSize: "12px",
-                colors: ["#304758"]
-              }
-            },
-            xaxis: {
-              categories: xaxis,
-              position: "bottom",
-              labels: {
-                offsetY: 0
-              },
-              axisBorder: {
-                show: false
-              },
-              axisTicks: {
-                show: false
-              },
-              crosshairs_: {
-                fill: {
-                  type: "gradient",
-                  gradient: {
-                    colorFrom: "#D8E3F0",
-                    colorTo: "#BED1E6",
-                    stops: [0, 100],
-                    opacityFrom: 0.4,
-                    opacityTo: 0.5
+          <ReactApexChart
+            options={{
+              plotOptions: {
+                bar: {
+                  dataLabels: {
+                    position: "top" // top, center, bottom
                   }
                 }
               },
-              tooltip: {
-                enabled: false,
-                offsetY: -35
-              }
-            },
-            fill: {
-              gradient: {
-                shade: "light",
-                type: "horizontal",
-                shadeIntensity: 0.25,
-                gradientToColors: undefined,
-                inverseColors: true,
-                opacityFrom: 1,
-                opacityTo: 1,
-                stops: [50, 0, 100, 100]
-              }
-            },
-            yaxis: {
-              axisBorder: {
-                show: true
-              },
-              axisTicks: {
-                show: true
-              },
-              labels: {
-                show: true,
+              dataLabels: {
+                enabled: true,
                 formatter: function (val) {
-                  return Number(val).toLocaleString();
+
+                },
+                offsetY: -20,
+                style: {
+                  fontSize: "12px",
+                  colors: ["#304758"]
+                }
+              },
+              xaxis: {
+                categories: xaxis,
+                position: "bottom",
+                labels: {
+                  offsetY: 0
+                },
+                axisBorder: {
+                  show: false
+                },
+                axisTicks: {
+                  show: false
+                },
+                crosshairs_: {
+                  fill: {
+                    type: "gradient",
+                    gradient: {
+                      colorFrom: "#D8E3F0",
+                      colorTo: "#BED1E6",
+                      stops: [0, 100],
+                      opacityFrom: 0.4,
+                      opacityTo: 0.5
+                    }
+                  }
+                },
+                tooltip: {
+                  enabled: false,
+                  offsetY: -35
+                }
+              },
+              fill: {
+                gradient: {
+                  shade: "light",
+                  type: "horizontal",
+                  shadeIntensity: 0.25,
+                  gradientToColors: undefined,
+                  inverseColors: true,
+                  opacityFrom: 1,
+                  opacityTo: 1,
+                  stops: [50, 0, 100, 100]
+                }
+              },
+              yaxis: {
+                axisBorder: {
+                  show: true
+                },
+                axisTicks: {
+                  show: true
+                },
+                labels: {
+                  show: true,
+                  formatter: function (val) {
+                    return Number(val).toLocaleString();
+                  }
+                }
+              },
+              title: {
+                text: 'Energy usage',
+                floating: true,
+                offsetY: 0,
+                align: "center",
+                style: {
+                  color: "#444",
+                  fontSize: "15px",
+                  fontWeight: '700%'
+                }
+              },
+              chart: {
+                animations: {
+                  enabled: false
                 }
               }
-            },
-            title: {
-              text: 'Energy usage',
-              floating: true,
-              offsetY: 0,
-              align: "center",
-              style: {
-                color: "#444",
-                fontSize: "15px",
-                fontWeight: '700%'
+            }}
+            series={[
+              {
+                name: "Energy",
+                data: [...toggleData]
               }
-            },
-            chart: {
-              animations: {
-                enabled: false
-              }
-            }
-          }}
-          series={[
-            {
-              name: "Energy",
-              data: [...toggleData]
-            }
-          ]}
-          type="bar"
-          height="300"
-        />}
+            ]}
+            type="bar"
+            height="300"
+          />
 
-    </div>
-
+        </div>
+      }
+    </>
   )
 }
 
